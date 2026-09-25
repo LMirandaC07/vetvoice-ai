@@ -1,4 +1,4 @@
-spring:
+﻿spring:
   application:
     name: vetvoice-ai
 
@@ -9,7 +9,8 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    hibernate:\r\n      ddl-auto: validate
+    hibernate:
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -20,11 +21,15 @@ spring:
     locations: classpath:db/migration
 
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY:}
+    ollama:
+      base-url: http://localhost:11434
       chat:
         options:
-          model: gpt-4o-mini
+          model: qwen3:1.7b
+          temperature: 0.2
+      embedding:
+        options:
+          model: nomic-embed-text
 
 server:
   port: 8080
@@ -32,4 +37,3 @@ server:
 logging:
   level:
     org.hibernate.SQL: debug
-
