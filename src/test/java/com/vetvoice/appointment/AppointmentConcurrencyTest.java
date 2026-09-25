@@ -26,7 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 // outras devem falhar (seja pela checagem otimista, seja pelo índice
 // único do banco). Isso é o teste que prova que a Fase 2 funciona de verdade
 // - não só "no papel".
-@SpringBootTest(properties = "spring.ai.openai.api-key=sk-test-fake-key-not-used")
+@SpringBootTest(properties = {
+        "spring.ai.openai.api-key=sk-test-fake-key-not-used",
+        "vetvoice.ai.rag.enabled=false"
+})
 class AppointmentConcurrencyTest {
 
     @Autowired private AppointmentService appointmentService;
