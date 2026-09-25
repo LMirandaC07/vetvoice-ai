@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: vetvoice-postgres
+    environment:
+      POSTGRES_DB: vetvoice
+      POSTGRES_USER: vetvoice
+      POSTGRES_PASSWORD: vetvoice
+    ports:
+      - "5432:5432"
+    volumes:
+      - vetvoice-data:/var/lib/postgresql/data
+
+volumes:
+  vetvoice-data:
