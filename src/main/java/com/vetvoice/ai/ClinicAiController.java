@@ -6,26 +6,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-// FASE 3: primeiro contato com Spring AI. Por enquanto o agente só CONVERSA
-// (sem Tool Calling ainda - isso é a Fase 4). A ideia aqui é você entender
-// como o ChatClient funciona antes de dar poder de executar ações pra ele.
+// FASE 3: primeiro contato com Spring AI. Por enquanto o agente sÃ³ CONVERSA
+// (sem Tool Calling ainda - isso Ã© a Fase 4). A ideia aqui Ã© vocÃª entender
+// como o ChatClient funciona antes de dar poder de executar aÃ§Ãµes pra ele.
 @RestController
 @RequestMapping("/api/ai")
 public class ClinicAiController {
 
     private final ChatClient chatClient;
 
-    // ChatClient.Builder é injetado automaticamente pelo Spring AI a partir
+    // ChatClient.Builder Ã© injetado automaticamente pelo Spring AI a partir
     // da config em application.yml (spring.ai.openai.*). O .build() aqui
-    // fixa um "system prompt" padrão pra todas as conversas desse client.
+    // fixa um "system prompt" padrÃ£o pra todas as conversas desse client.
     public ClinicAiController(ChatClient.Builder builder) {
         this.chatClient = builder
                 .defaultSystem("""
-                        Você é o assistente virtual da VetVoice, uma clínica veterinária.
-                        Responda de forma curta, educada e profissional, em português.
-                        Você ainda não tem acesso ao sistema de agendamentos - se o
-                        usuário pedir para marcar, cancelar ou consultar um horário,
-                        explique que essa função está sendo implementada em breve.
+                        VocÃª Ã© o assistente virtual da VetVoice, uma clÃ­nica veterinÃ¡ria.
+                        Responda de forma curta, educada e profissional, em portuguÃªs.
+                        VocÃª ainda nÃ£o tem acesso ao sistema de agendamentos - se o
+                        usuÃ¡rio pedir para marcar, cancelar ou consultar um horÃ¡rio,
+                        explique que essa funÃ§Ã£o estÃ¡ sendo implementada em breve.
                         """)
                 .build();
     }
@@ -42,3 +42,4 @@ public class ClinicAiController {
         return new AskResponse(answer);
     }
 }
+

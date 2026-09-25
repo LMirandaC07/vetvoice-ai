@@ -32,31 +32,25 @@ public class AppointmentService {
         Pet pet = petService.findById(dto.petId());
         Veterinarian vet = veterinarianService.findById(dto.veterinarianId());
 
-        // Camada 1 de proteção contra double-booking: checagem "otimista".
-        // Isso NÃO é 100% seguro sozinho: duas requisições podem passar por
+        // Camada 1 de proteÃ§Ã£o contra double-booking: checagem "otimista".
+        // Isso NÃƒO Ã© 100% seguro sozinho: duas requisiÃ§Ãµes podem passar por
         // aqui ao mesmo tempo (antes de qualquer uma ter dado commit) e as
-        // duas verem a lista vazia. É só pra dar um erro rápido e claro (409)
+        // duas verem a lista vazia. Ã‰ sÃ³ pra dar um erro rÃ¡pido e claro (409)
         // no caso comum, sem precisar esperar o banco rejeitar.
         List<Appointment> conflitos = repository.findActiveByVetAndSlot(vet.getId(), dto.scheduledAt());
         if (!conflitos.isEmpty()) {
             throw new AppointmentConflictException(
-                    "Veterinário já possui um agendamento ativo nesse horário.");
+                    "VeterinÃ¡rio jÃ¡ possui um agendamento ativo nesse horÃ¡rio.");
         }
 
         Appointment appointment = new Appointment(pet, vet, dto.scheduledAt(), dto.notes());
-
-        // Camada 2, a que REALMENTE garante a regra sob concorrência: o
-        // índice único parcial `uq_appointment_vet_slot` no banco (ver
-        // V1__init_schema.sql). Se duas requisições simultâneas passarem
-        // pela checagem acima ao mesmo tempo, só UMA das duas consegue
-        // completar esse save() - a outra recebe uma exceção aqui, que o
-        // GlobalExceptionHandler converte em HTTP 409.
+        // O índice único no PostgreSQL é a garantia final contra concorrência.
         return repository.save(appointment);
     }
 
     public Appointment findById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado: id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento nÃ£o encontrado: id=" + id));
     }
 
     public List<Appointment> findAll() {
@@ -81,3 +75,4 @@ public class AppointmentService {
         return appointment;
     }
 }
+

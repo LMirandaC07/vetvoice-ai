@@ -9,10 +9,7 @@ spring:
     driver-class-name: org.postgresql.Driver
 
   jpa:
-    hibernate:
-      # validate = nao deixa o Hibernate criar/alterar tabelas sozinho.
-      # Quem manda no schema e o Flyway (migrations versionadas).
-      ddl-auto: validate
+    hibernate:\r\n      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -35,3 +32,4 @@ server:
 logging:
   level:
     org.hibernate.SQL: debug
+

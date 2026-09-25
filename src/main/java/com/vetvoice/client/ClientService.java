@@ -10,9 +10,9 @@ public class ClientService {
 
     private final ClientRepository repository;
 
-    // Injeção de dependência via construtor (não @Autowired em campo).
-    // Vantagens: fica explícito o que a classe precisa pra funcionar, e
-    // facilita muito escrever teste unitário (você só passa um mock aqui).
+    // InjeÃ§Ã£o de dependÃªncia via construtor (nÃ£o @Autowired em campo).
+    // Vantagens: fica explÃ­cito o que a classe precisa pra funcionar, e
+    // facilita muito escrever teste unitÃ¡rio (vocÃª sÃ³ passa um mock aqui).
     public ClientService(ClientRepository repository) {
         this.repository = repository;
     }
@@ -25,7 +25,7 @@ public class ClientService {
 
     public Client findById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado: id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente nÃ£o encontrado: id=" + id));
     }
 
     public java.util.List<Client> findAll() {
@@ -38,7 +38,7 @@ public class ClientService {
         client.setName(dto.name());
         client.setEmail(dto.email());
         client.setPhone(dto.phone());
-        return client; // dentro de uma transação, o Hibernate detecta a mudança e faz UPDATE sozinho (dirty checking)
+        return client; // dentro de uma transaÃ§Ã£o, o Hibernate detecta a mudanÃ§a e faz UPDATE sozinho (dirty checking)
     }
 
     @Transactional
@@ -47,3 +47,4 @@ public class ClientService {
         repository.delete(client);
     }
 }
+

@@ -30,13 +30,14 @@ CREATE TABLE appointment (
     version           BIGINT        NOT NULL DEFAULT 0
 );
 
--- FASE 2 (concorrência): impede que o MESMO veterinário tenha dois agendamentos
--- ativos no MESMO horário. É um índice único PARCIAL: só considera linhas cujo
--- status ainda não é CANCELLED. Isso empurra a regra de negócio pro banco,
--- que é o único lugar que consegue garantir isso de forma 100% segura sob
--- concorrência (duas requisições simultâneas não conseguem "passar" pela
--- validação em Java ao mesmo tempo e ambas inserirem, porque o banco rejeita
--- a segunda inserção na hora do INSERT/COMMIT).
+-- FASE 2 (concorrÃªncia): impede que o MESMO veterinÃ¡rio tenha dois agendamentos
+-- ativos no MESMO horÃ¡rio. Ã‰ um Ã­ndice Ãºnico PARCIAL: sÃ³ considera linhas cujo
+-- status ainda nÃ£o Ã© CANCELLED. Isso empurra a regra de negÃ³cio pro banco,
+-- que Ã© o Ãºnico lugar que consegue garantir isso de forma 100% segura sob
+-- concorrÃªncia (duas requisiÃ§Ãµes simultÃ¢neas nÃ£o conseguem "passar" pela
+-- validaÃ§Ã£o em Java ao mesmo tempo e ambas inserirem, porque o banco rejeita
+-- a segunda inserÃ§Ã£o na hora do INSERT/COMMIT).
 CREATE UNIQUE INDEX uq_appointment_vet_slot
     ON appointment (veterinarian_id, scheduled_at)
     WHERE status <> 'CANCELLED';
+

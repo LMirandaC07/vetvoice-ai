@@ -1,131 +1,98 @@
 # 🐾 VetVoice AI
 
-API backend para gestão de uma clínica veterinária, construída como projeto de portfólio para explorar **Java, Spring Boot, PostgreSQL, concorrência e IA generativa**.
+O VetVoice AI é uma API que estou desenvolvendo para praticar backend com Java e Spring Boot usando o cenário de uma clínica veterinária.
 
-O sistema gerencia clientes, pets, veterinários e agendamentos. Além do CRUD, protege horários contra reservas concorrentes e possui integração inicial com LLM por meio do Spring AI.
+A ideia começou com um problema simples: organizar clientes, pets, veterinários e consultas. A partir disso, usei o projeto para estudar persistência com PostgreSQL, migrations e um problema que achei interessante em sistemas de agenda: duas requisições tentando reservar o mesmo horário.
 
-## ✨ Principais recursos
+## O que funciona hoje
 
-- Cadastro de clientes, pets e veterinários
-- Criação, confirmação e cancelamento de consultas
-- Validação de dados com Bean Validation
-- Tratamento centralizado de erros
-- Migrations versionadas com Flyway
-- PostgreSQL executado com Docker Compose
-- Proteção contra **double-booking** no serviço e no banco
-- Teste de concorrência com 10 requisições simultâneas
-- Endpoint experimental de assistente com Spring AI + OpenAI
+- CRUD de clientes, pets e veterinários
+- criação, confirmação e cancelamento de consultas
+- validação dos dados recebidos pela API
+- PostgreSQL com migrations do Flyway
+- prevenção de dois agendamentos ativos para o mesmo veterinário e horário
+- teste de integração que simula requisições concorrentes
+- primeiro experimento com Spring AI para um assistente da clínica
 
-## 🛠️ Tecnologias
+## Tecnologias que estou praticando
 
-`Java 21` · `Spring Boot 3` · `Spring Data JPA` · `PostgreSQL` · `Flyway` · `Docker` · `Spring AI` · `JUnit 5` · `Maven`
+- Java 21
+- Spring Boot 3 e Spring Data JPA
+- PostgreSQL e Flyway
+- Docker Compose
+- Maven e JUnit 5
+- Spring AI
 
-## 🏗️ Arquitetura
+## Estrutura do projeto
 
-O projeto segue um **monólito modular organizado por domínio**, evitando separar toda a aplicação apenas por tipo técnico.
+Organizei os pacotes por área do sistema (`client`, `pet`, `veterinarian` e `appointment`). Cada área concentra controller, service, repository, entidade e DTOs relacionados.
+
+O fluxo principal da API é:
 
 ```text
-HTTP → Controller → Service → Repository → PostgreSQL
-```
-```text
-src/main/java/com/vetvoice
-├── ai/              # integração com IA
-├── appointment/     # regras de agendamento
-├── client/          # clientes
-├── common/          # componentes compartilhados e exceptions
-├── pet/             # animais
-└── veterinarian/    # veterinários
+requisição HTTP -> controller -> service -> repository -> PostgreSQL
 ```
 
-## 🔒 Destaque técnico: concorrência
+## O problema de concorrência que estudei
 
-Um problema importante em sistemas de agenda é impedir que duas pessoas reservem o mesmo profissional no mesmo horário.
+Só consultar o banco antes de salvar não garante que um horário esteja livre. Duas requisições podem fazer essa consulta quase ao mesmo tempo e ambas encontrarem o horário disponível.
 
-O VetVoice resolve isso em duas camadas:
+Por isso mantive uma verificação no `AppointmentService`, para retornar um erro mais claro no caso comum, e também criei no PostgreSQL um índice único para `(veterinarian_id, scheduled_at)` enquanto a consulta não estiver cancelada. O banco fica responsável pela garantia final.
 
-1. O `AppointmentService` verifica previamente se o horário está disponível.
-2. O PostgreSQL possui o índice único parcial `uq_appointment_vet_slot`, que mantém a regra mesmo se duas requisições chegarem simultaneamente.
+O `AppointmentConcurrencyTest` tenta criar 10 consultas simultaneamente no mesmo horário e verifica que apenas uma consegue ser salva.
 
-O `AppointmentConcurrencyTest` dispara **10 threads ao mesmo tempo** para o mesmo horário. O comportamento esperado é exatamente uma reserva bem-sucedida.
+## Como executar
 
-## 🚀 Executando localmente
+Pré-requisitos: JDK 21+, Docker Desktop e Maven.
 
-### Pré-requisitos
+1. Inicie o PostgreSQL:
 
-- JDK 21+
-- Docker Desktop
-- Maven (ou Maven integrado ao IntelliJ IDEA)
-
-### 1. Banco de dados
 ```bash
 docker compose up -d
 ```
 
-### 2. OpenAI (opcional)
-
-A chave só é necessária para testar `/api/ai/ask`. Nunca coloque uma chave real no Git.
-
-PowerShell:
-
-```powershell
-$env:OPENAI_API_KEY="sua-chave"
-```
-
-Linux/macOS:
-
-```bash
-export OPENAI_API_KEY="sua-chave"
-```
-
-### 3. Aplicação
-
-No IntelliJ, execute `VetVoiceApplication`, ou pelo terminal:
+2. Execute `VetVoiceApplication` pelo IntelliJ ou use:
 
 ```bash
 mvn spring-boot:run
 ```
 
-A API ficará disponível em `http://localhost:8080`.
-
-## 📡 Endpoints principais
-
-| Método | Endpoint | Função |
-|---|---|---|
-| `POST` | `/api/clients` | Cadastrar cliente |
-| `POST` | `/api/pets` | Cadastrar pet |
-| `POST` | `/api/veterinarians` | Cadastrar veterinário |
-| `POST` | `/api/appointments` | Criar agendamento |
-| `PATCH` | `/api/appointments/{id}/confirm` | Confirmar agendamento |
-| `PATCH` | `/api/appointments/{id}/cancel` | Cancelar agendamento |
-| `POST` | `/api/ai/ask` | Perguntar ao assistente da clínica |
-
-## 🧪 Testes
+3. Para executar os testes:
 
 ```bash
 mvn test
 ```
 
-> O teste de concorrência utiliza PostgreSQL. Inicie o Docker Desktop e execute `docker compose up -d` antes dos testes de integração.
+A API roda em `http://localhost:8080`.
 
-## 🗺️ Roadmap
+## IA (em desenvolvimento)
 
-- [x] API REST e persistência
-- [x] Disponibilidade e proteção contra concorrência
-- [x] Integração inicial com LLM
-- [ ] Tool Calling para criar/cancelar agendamentos por IA
-- [ ] RAG com informações da clínica
-- [ ] Atendimento por voz
-- [ ] Observabilidade, CI e deploy
+O endpoint `/api/ai/ask` é meu primeiro experimento com Spring AI. Neste momento ele apenas conversa usando um prompt de sistema; ele ainda **não cria nem cancela consultas**.
 
-## 💡 O que este projeto demonstra
+Para testar essa parte, configure `OPENAI_API_KEY` no ambiente antes de iniciar a aplicação. O restante da API não depende desse endpoint para representar as regras de agendamento.
 
-Este projeto foi desenvolvido com foco em aprendizado e portfólio. Ele demonstra modelagem de domínio, criação de APIs REST, persistência relacional, migrations, tratamento de erros, concorrência, testes e integração de IA em uma aplicação Java.
+## Endpoints principais
 
-## 👨‍💻 Autor
+| Método | Endpoint | Função |
+|---|---|---|
+| `POST` | `/api/clients` | cadastrar cliente |
+| `POST` | `/api/pets` | cadastrar pet |
+| `POST` | `/api/veterinarians` | cadastrar veterinário |
+| `POST` | `/api/appointments` | criar consulta |
+| `PATCH` | `/api/appointments/{id}/confirm` | confirmar consulta |
+| `PATCH` | `/api/appointments/{id}/cancel` | cancelar consulta |
+| `POST` | `/api/ai/ask` | conversar com o assistente experimental |
 
-**Luis Miranda**  
-Estudante de Análise e Desenvolvimento de Sistemas.
+## Próximos passos
 
----
+- aumentar a cobertura de testes das regras de negócio
+- documentar a API com OpenAPI/Swagger
+- permitir que o assistente consulte horários de forma controlada
+- adicionar autenticação
+- fazer deploy da aplicação
 
-Se este projeto foi útil ou interessante, uma ⭐ no repositório é bem-vinda.
+## Autor
+
+**Luis Miranda** — estudante de Análise e Desenvolvimento de Sistemas.
+
+Projeto criado para estudo e evolução do meu portfólio de backend.
