@@ -7,17 +7,7 @@ services:
     dockerfilePath: ./Dockerfile
     healthCheckPath: /health
     envVars:
-      - key: PGHOST
-        sync: false
-      - key: PGPORT
-        value: "5432"
-      - key: PGSSLMODE
-        value: require
-      - key: PGDATABASE
-        sync: false
-      - key: PGUSER
-        sync: false
-      - key: PGPASSWORD
+      - key: SPRING_DATASOURCE_URL
         sync: false
       - key: VETVOICE_AI_RAG_ENABLED
         value: "false"
