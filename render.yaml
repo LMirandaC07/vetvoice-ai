@@ -11,6 +11,8 @@ services:
         sync: false
       - key: PGPORT
         value: "5432"
+      - key: PGSSLMODE
+        value: require
       - key: PGDATABASE
         sync: false
       - key: PGUSER
