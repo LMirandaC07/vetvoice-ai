@@ -132,9 +132,15 @@ mvn test
 
 ## 🤖 Integração com IA
 
-O endpoint `/api/ai/ask` é uma integração inicial com **Spring AI**. Atualmente, o assistente responde utilizando um prompt de sistema, mas ainda não executa operações como criar ou cancelar consultas.
+O endpoint `/api/ai/ask` é uma integração inicial com **Spring AI e Ollama**. Atualmente, o assistente responde utilizando uma base de conhecimento e um prompt de sistema, mas ainda não executa operações como criar ou cancelar consultas.
 
-Para utilizar esse endpoint, defina a variável de ambiente `OPENAI_API_KEY`. **Não adicione sua chave diretamente ao código ou ao Git.**
+Para utilizar esse endpoint, execute o Ollama com os modelos configurados em `application.yml` e defina `SPRING_AI_OLLAMA_BASE_URL` se ele não estiver em `http://localhost:11434`. O módulo RAG exige acesso ao modelo de embeddings durante a inicialização.
+
+## ☁️ Deploy
+
+O repositório inclui um `Dockerfile` multi-stage para construir e executar a API com Java 21. Em uma hospedagem que forneça PostgreSQL, configure `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER` e `PGPASSWORD`, além da variável `PORT` fornecida pela plataforma.
+
+O endpoint de IA fica desativado na imagem por padrão (`VETVOICE_AI_RAG_ENABLED=false`), pois o Ollama está configurado localmente e precisa de um serviço de modelo acessível para funcionar em produção. Para ativá-lo, configure um Ollama remoto e defina `VETVOICE_AI_RAG_ENABLED=true`.
 
 ## 🗺️ Próximos passos
 
@@ -170,3 +176,4 @@ Estudante de **Análise e Desenvolvimento de Sistemas** e desenvolvedor em forma
 <div align="center">
 Desenvolvido para estudo, prática e evolução do meu portfólio em desenvolvimento backend.
 </div>
+
