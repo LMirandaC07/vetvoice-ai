@@ -142,13 +142,15 @@ O repositório inclui um `Dockerfile` multi-stage para construir e executar a AP
 
 O endpoint de IA fica desativado na imagem por padrão (`VETVOICE_AI_RAG_ENABLED=false`), pois o Ollama está configurado localmente e precisa de um serviço de modelo acessível para funcionar em produção. Para ativá-lo, configure um Ollama remoto e defina `VETVOICE_AI_RAG_ENABLED=true`.
 
+**Demo pública:** [API VetVoice AI](https://vetvoice-ai.onrender.com/health). A hospedagem é uma demo de portfólio; não use dados reais de clientes ou pacientes.
+
 ## 🗺️ Próximos passos
 
 - [ ] Aumentar a cobertura de testes das regras de negócio
 - [ ] Documentar a API com OpenAPI / Swagger
 - [ ] Adicionar autenticação e autorização
 - [ ] Permitir que o assistente consulte horários de forma controlada
-- [ ] Realizar deploy da aplicação
+- [x] Realizar deploy da aplicação
 
 ## 🎯 Aprendizados
 
